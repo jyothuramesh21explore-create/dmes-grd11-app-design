@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 11 App Design - Evaluating App Security</title>
+    <style>
+        /* CSS Reset and Variables */
+        :root {
+            --primary: #0047AB; /* Deep Blue */
+            --secondary: #00BFFF; /* Deep Sky Blue */
+            --accent: #FFD700; /* Gold */
+            --bg-color: #F4F7F6;
+            --text-main: #333333;
+            --text-light: #666666;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Container & Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+        }
+
+        .score-board {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent);
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+        }
+
+        /* Student Info Form */
+        .student-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            background: var(--white);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        /* DMES Stage Cards */
+        .stage-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--primary);
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .stage-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 10px;
+        }
+
+        .stage-title {
+            color: var(--primary);
+            font-size: 1.4em;
+        }
+
+        .stage-timer {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+            cursor: pointer;
+            border: 1px solid #ccc;
+        }
+
+        .timer-warning {
+            background-color: var(--warning);
+            color: #000;
+        }
+
+        .timer-danger {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        /* Interactive Elements */
+        .btn {
+            background-color: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #009acd;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-outline:hover {
+             background-color: var(--secondary);
+             color: white;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+            margin-top: 10px;
+        }
+
+        /* Stage 1: Entry */
+        .phishing-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .phishing-img {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #f9f9f9;
+            flex: 1;
+            min-width: 250px;
+        }
+        .phishing-img.selected {
+            border-color: var(--primary);
+            background: #e6f2ff;
+        }
+        .url-bar {
+            font-family: monospace;
+            background: #eee;
+            padding: 5px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 1.1em;
+        }
+
+        /* Stage 3: Do Now (Vocabulary) */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .odd-one-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .word-options {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .word-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--primary);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .word-btn.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Code Blocks */
+        .code-display {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .keyword { color: #f92672; }
+        .string { color: #e6db74; }
+        .function { color: #a6e22e; }
+
+        /* Stage 6 & 7: Practice */
+        .feedback-msg {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .feedback-msg.correct { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .feedback-msg.incorrect { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .hint-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffeeba;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Stage 8: Progress Check */
+        .traffic-lights {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .light-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+            opacity: 0.5;
+        }
+        .light-btn[data-val="green"] { background-color: var(--success); color: white;}
+        .light-btn[data-val="yellow"] { background-color: var(--warning); }
+        .light-btn[data-val="red"] { background-color: var(--danger); color: white;}
+        .light-btn.selected { opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); transform: scale(1.05);}
+
+        /* Dashboard */
+        .dashboard {
+            background-color: #e9ecef;
+            border: 2px solid var(--primary);
+        }
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .dash-section {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; color: black; }
+            .container { width: 100%; max-width: none; padding: 0; }
+            .btn, .stage-timer, .score-board { display: none !important; }
+            .stage-card { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; margin-bottom: 20px; padding: 15px;}
+            header { background: none; color: black; border: 1px solid black; box-shadow: none; }
+            textarea { border: none; background: #f9f9f9; resize: none; height: auto; }
+            input[type="text"], select, input[type="date"] { border: none; border-bottom: 1px solid black; border-radius: 0; appearance: none; -webkit-appearance: none; background: transparent; }
+            .hidden { display: block !important; } /* Show everything for print context if needed, handled via JS mostly */
+            .hint-box { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Lesson 2: Evaluating App Security</h1>
+        <p>Computer Science / ICT - Grade 11 App Design</p>
+        <div class="score-board">Score: <span id="total-score">0</span> / 40</div>
+    </header>
+
+    <div class="student-info">
+        <div class="form-group">
+            <label for="student-name">Student Name:</label>
+            <input type="text" id="student-name" placeholder="Enter full name" required>
+        </div>
+        <div class="form-group">
+            <label for="student-grade">Grade:</label>
+            <select id="student-grade">
+                <option value="" disabled selected>Select Grade</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="student-section">Section:</label>
+            <select id="student-section">
+                <option value="" disabled selected>Select Section</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+                <option value="H">H</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="current-date">Date:</label>
+            <input type="date" id="current-date">
+        </div>
+    </div>
+
+    <!-- STAGE 1: ENTRY -->
+    <div class="stage-card" id="stage-1">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 1: ENTRY - "Phishing or Real?"</h2>
+            <div class="stage-timer" onclick="startTimer('timer-1', 2)">⏱ 2:00 (Click to Start)</div>
+        </div>
+        <p><strong>Mission:</strong> Spot the difference. Below are two identical-looking login screens. Which one is trying to steal your password?</p>
+        
+        <div class="phishing-container">
+            <div class="phishing-img" onclick="selectPhishing(this, false)">
+                <div class="url-bar">🔒 https://www.instgram.com/login</div>
+                <h3>Instagram</h3>
+                <input type="text" placeholder="Username" disabled style="width: 80%; margin: 5px;">
+                <input type="password" placeholder="Password" disabled style="width: 80%; margin: 5px;">
+                <button disabled style="margin-top: 10px;">Log In</button>
+            </div>
+            <div class="phishing-img" onclick="selectPhishing(this, true)">
+                <div class="url-bar">🔒 https://www.instagram.com/login</div>
+                <h3>Instagram</h3>
+                <input type="text" placeholder="Username" disabled style="width: 80%; margin: 5px;">
+                <input type="password" placeholder="Password" disabled style="width: 80%; margin: 5px;">
+                <button disabled style="margin-top: 10px;">Log In</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Why did you choose that one?</label>
+            <textarea id="entry-response" rows="2" placeholder="Type your reasoning here..."></textarea>
+        </div>
+        <button class="btn" onclick="checkEntry()">Submit Answer</button>
+        <div id="entry-feedback" class="feedback-msg hidden"></div>
+    </div>
+
+    <!-- STAGE 2: LEARNING OBJECTIVE -->
+    <div class="stage-card" id="stage-2">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 2: LEARNING OBJECTIVE & SUCCESS CRITERIA</h2>
+            <div class="stage-timer" onclick="startTimer('timer-2', 2)">⏱ 2:00 (Click to Start)</div>
+        </div>
+        <p><strong>Learning Objective:</strong> TSW evaluate digital scenarios to determine the likelihood of security threats in app design.</p>
+        <div style="margin-top: 15px;">
+            <strong>Success Criteria (Check off when you feel confident):</strong><br>
+            <label><input type="checkbox" id="sc1"> I can differentiate between a trustworthy and untrustworthy application.</label><br>
+            <label><input type="checkbox" id="sc2"> I can code a Python conditional that filters out invalid or threatening user input.</label>
+        </div>
+    </div>
+
+    <!-- STAGE 3: DO NOW -->
+    <div class="stage-card" id="stage-3">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 3: DO NOW - Vocabulary Odd-One-Out</h2>
+            <div class="stage-timer" onclick="startTimer('timer-3', 4)">⏱ 4:00 (Click to Start)</div>
+        </div>
+        <p><strong>Target Vocabulary:</strong> Trustworthy, Threat, Likelihood.</p>
+        <p>Identify the "Odd One Out" in each set and explain why using the target vocabulary.</p>
+
+        <div class="vocab-grid">
+            <div class="odd-one-card">
+                <h4>Set 1:</h4>
+                <div class="word-options" id="set1-options">
+                    <button class="word-btn" onclick="selectOddOne('set1', this, 'Firewall')">Firewall</button>
+                    <button class="word-btn" onclick="selectOddOne('set1', this, 'Hacker')">Hacker</button>
+                    <button class="word-btn" onclick="selectOddOne('set1', this, 'Virus')">Virus</button>
+                </div>
+                <textarea id="vocab-explain-1" rows="2" placeholder="Explain why using the word 'Trustworthy' or 'Threat'..."></textarea>
+            </div>
+            
+            <div class="odd-one-card">
+                <h4>Set 2:</h4>
+                <div class="word-options" id="set2-options">
+                    <button class="word-btn" onclick="selectOddOne('set2', this, '100% Guaranteed')">100% Guaranteed</button>
+                    <button class="word-btn" onclick="selectOddOne('set2', this, 'High Probability')">High Probability</button>
+                    <button class="word-btn" onclick="selectOddOne('set2', this, 'Rare Chance')">Rare Chance</button>
+                </div>
+                <textarea id="vocab-explain-2" rows="2" placeholder="Explain why using the word 'Likelihood'..."></textarea>
+            </div>
+        </div>
+        <button class="btn" onclick="checkVocab()">Submit Vocabulary</button>
+        <div id="vocab-feedback" class="feedback-msg hidden"></div>
+    </div>
+
+    <!-- STAGE 4: EXPLICIT INSTRUCTION -->
+    <div class="stage-card" id="stage-4">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 4: EXPLICIT INSTRUCTION - Teach Time</h2>
+            <div class="stage-timer" onclick="startTimer('timer-4', 10)">⏱ 10:00 (Click to Start)</div>
+        </div>
+        <h3>Threat Modeling in App Design</h3>
+        <p>What makes an app secure? We must evaluate two things:</p>
+        <ul>
+            <li><strong>The Threat:</strong> A potential negative action or event (e.g., SQL injection, bad passwords, data theft).</li>
+            <li><strong>The Likelihood:</strong> How often or how easily it might happen.</li>
+        </ul>
+        <div style="background: #e6f2ff; border-left: 4px solid var(--primary); padding: 10px; margin: 15px 0;">
+            <strong>⚠️ Misconception Alert!</strong>
+            <p>Many people think: <em>"If it's in the Apple App Store or Google Play, it is 100% trustworthy."</em></p>
+            <p><strong>Reality:</strong> While screened for major viruses, many apps legally track excessive data (location, contacts) creating a privacy <strong>threat</strong> with a high <strong>likelihood</strong> if users blindly accept permissions.</p>
+        </div>
+        <p><em>Listen to the teacher's explanation before moving to the next stage.</em></p>
+    </div>
+
+    <!-- STAGE 5: TEACHER MODEL -->
+    <div class="stage-card" id="stage-5">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 5: TEACHER MODEL (I Do)</h2>
+        </div>
+        <p><strong>Scenario:</strong> Designing a password creation screen.</p>
+        <p><strong>Teacher Think-Aloud:</strong> "If I let a user make the password '123', the <em>likelihood</em> of a hack is high. This makes my app less <em>trustworthy</em>. So, in my code, I must check the length."</p>
+        
+        <div class="code-display">
+<span class="keyword">password</span> = input(<span class="string">"Create a password: "</span>)
+
+<span class="keyword">if</span> <span class="function">len</span>(password) < <span class="string">8</span>:
+    <span class="function">print</span>(<span class="string">"Threat detected: Password too weak"</span>)
+<span class="keyword">else</span>:
+    <span class="function">print</span>(<span class="string">"Password accepted."</span>)
+        </div>
+        
+        <div class="form-group">
+            <label>Prediction Check: What will the console output if the user enters "apple"?</label>
+            <input type="text" id="model-prediction" placeholder="Type predicted output exactly...">
+        </div>
+        <button class="btn btn-outline" onclick="checkPrediction()">Check Prediction</button>
+        <div id="prediction-feedback" class="feedback-msg hidden"></div>
+    </div>
+
+    <!-- STAGE 6: GUIDED PRACTICE -->
+    <div class="stage-card" id="stage-6">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 6: GUIDED PRACTICE (We Do)</h2>
+            <div class="stage-timer" onclick="startTimer('timer-6', 10)">⏱ 10:00 (Click to Start)</div>
+        </div>
+        <p><strong>Collaborative Threat Matrix & Coding</strong></p>
+        <p>Let's evaluate a scenario together. An app claims to be a "Simple Calculator" but asks for GPS Location permissions.</p>
+        
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+            <label>Likelihood of a privacy threat:</label>
+            <select id="we-do-likelihood">
+                <option value="">Select...</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+
+        <p><strong>Complete the Python code collaboratively:</strong></p>
+        <div class="code-display" style="padding: 10px;">
+<span class="keyword">permission</span> = <span class="string">"location"</span>
+<span class="keyword">app_type</span> = <span class="string">"calculator"</span>
+
+<span class="keyword">if</span> permission == <input type="text" id="we-do-code-1" style="width: 100px; font-family: monospace;" placeholder='"..."'> <span class="keyword">and</span> app_type == <input type="text" id="we-do-code-2" style="width: 120px; font-family: monospace;" placeholder='"..."'>:
+    <span class="function">print</span>(<span class="string">"Untrustworthy!"</span>)
+        </div>
+        
+        <button class="btn" onclick="checkWeDo()">Check Our Logic</button>
+        <button class="btn btn-outline" onclick="document.getElementById('hint-1').style.display='block'">Need a Hint?</button>
+        
+        <div id="hint-1" class="hint-box">
+            <strong>Hint:</strong> Look at the variables defined at the top. We are checking if the variables match those exact string values. Don't forget the quotes!
+        </div>
+        <div id="wedo-feedback" class="feedback-msg hidden"></div>
+    </div>
+
+    <!-- STAGE 7: INDEPENDENT APPLICATION -->
+    <div class="stage-card" id="stage-7">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 7: INDEPENDENT APPLICATION (You Do)</h2>
+            <div class="stage-timer" onclick="startTimer('timer-7', 12)">⏱ 12:00 (Click to Start)</div>
+        </div>
+        <p><strong>Task: Code a "Trust Validator"</strong></p>
+        <p><strong>Problem:</strong> Write a program that asks a user for a website URL. If the URL contains "http://" instead of "https://", the program should output a warning about security threats.</p>
+        <ul>
+            <li><strong>Core:</strong> Program uses if/else and the <code>in</code> operator.</li>
+            <li><strong>Support:</strong> Check the hint for syntax on checking if a string is inside another string.</li>
+            <li><strong>Stretch:</strong> Add an `elif` to check if the URL contains ".gov" or ".edu" and print "High Trust".</li>
+        </ul>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #333; color: white; padding: 5px 10px; border-radius: 4px 4px 0 0;">
+            <span>Python Simulator Workspace</span>
+            <button class="btn" style="margin: 0; padding: 5px 10px;" onclick="simulateRun()">▶ Run Code</button>
+        </div>
+        <textarea id="student-code" rows="10" style="margin-top: 0; border-radius: 0 0 4px 4px; background: #1e1e1e; color: #d4d4d4; font-size: 1.1em;">
+# Starter Code
+url = input("Enter a website URL: ")
+
+# Write your if/else logic below:
+
+</textarea>
+        
+        <div style="background: black; color: #0f0; font-family: monospace; padding: 10px; margin-top: 10px; min-height: 50px;" id="console-output">
+            > Console ready...
+        </div>
+
+        <button class="btn btn-outline" style="margin-top: 10px;" onclick="document.getElementById('hint-2').style.display='block'">Support Hint</button>
+        <div id="hint-2" class="hint-box">
+            <strong>Syntax Reminder:</strong> To check if a word is in a string, use: <br>
+            <code>if "http://" in url:</code>
+        </div>
+    </div>
+
+    <!-- STAGE 8: PROGRESS CHECK -->
+    <div class="stage-card" id="stage-8">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 8: HIGH-IMPACT PROGRESS CHECK</h2>
+            <div class="stage-timer" onclick="startTimer('timer-8', 5)">⏱ 5:00 (Click to Start)</div>
+        </div>
+        <p><strong>Exit Ticket Code Submission & Analysis</strong></p>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>1. In Python, why do we use <code>"https" in url</code> instead of <code>url == "https"</code> for this specific problem?</label>
+            <textarea id="pc-q1" rows="2"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>2. If a user enters "HTTPS://www.bank.com" (capital letters), will <code>if "https" in url:</code> find it? Why or why not?</label>
+            <textarea id="pc-q2" rows="2"></textarea>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <label><strong>Self-Assessment: How did you complete Stage 7?</strong></label>
+            <div class="traffic-lights">
+                <button class="light-btn" data-val="green" onclick="selectTrafficLight(this)">🟢 Independently</button>
+                <button class="light-btn" data-val="yellow" onclick="selectTrafficLight(this)">🟡 With Help (Hints/Peers)</button>
+                <button class="light-btn" data-val="red" onclick="selectTrafficLight(this)">🔴 Need Practice</button>
+            </div>
+            <input type="hidden" id="traffic-light-status" value="">
+        </div>
+    </div>
+
+    <!-- STAGE 9: FEEDBACK & ADJUSTMENT -->
+    <div class="stage-card" id="stage-9">
+        <div class="stage-header">
+            <h2 class="stage-title">STAGE 9: FEEDBACK & INSTRUCTIONAL ADJUSTMENT</h2>
+        </div>
+        <p>Review your progress check answers with the class. Based on the teacher's feedback, complete the reflection below.</p>
+        
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>What mistake did you identify in your code or logic today?</label>
+            <textarea id="ref-mistake" rows="2"></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Based on your self-assessment, what is your next step? (e.g., Review string methods, Practice if/else, Try the stretch goal)</label>
+            <textarea id="ref-next" rows="2"></textarea>
+        </div>
+
+        <div style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 15px;">
+            <label><em>Teacher Only - Instructional Adjustment:</em></label>
+            <select id="teacher-action">
+                <option value="None Selected">Select Action</option>
+                <option value="Reteach string case sensitivity">Reteach string case sensitivity</option>
+                <option value="Re-model if/else structure">Re-model if/else structure</option>
+                <option value="Regroup for peer support">Regroup for peer support</option>
+                <option value="Extend to complex conditionals">Extend to complex conditionals</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- SUBMISSION DASHBOARD -->
+    <div class="stage-card dashboard">
+        <h2 style="text-align: center; color: var(--primary); margin-bottom: 20px;">MISSION COMPLETE DASHBOARD</h2>
+        <div class="dash-grid">
+            <div class="dash-section">
+                <h3>Student Data</h3>
+                <p><strong>Name:</strong> <span id="dash-name">---</span></p>
+                <p><strong>Grade/Sec:</strong> <span id="dash-grade">---</span> / <span id="dash-sec">---</span></p>
+                <p><strong>Date:</strong> <span id="dash-date">---</span></p>
+                <h3 style="margin-top: 10px; color: var(--primary);">Final Score: <span id="dash-score">0</span>/40</h3>
+            </div>
+            <div class="dash-section">
+                <h3>Time Tracking</h3>
+                <ul id="dash-times" style="list-style-type: none; font-family: monospace;">
+                    <li>Stage 1: <span id="time-log-1">00:00</span></li>
+                    <li>Stage 2: <span id="time-log-2">00:00</span></li>
+                    <li>Stage 3: <span id="time-log-3">00:00</span></li>
+                    <li>Stage 4: <span id="time-log-4">00:00</span></li>
+                    <li>Stage 6: <span id="time-log-6">00:00</span></li>
+                    <li>Stage 7: <span id="time-log-7">00:00</span></li>
+                    <li>Stage 8: <span id="time-log-8">00:00</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="dash-section" style="margin-top: 20px;">
+            <h3>Completion Status</h3>
+            <p><strong>Self-Assessment:</strong> <span id="dash-traffic">---</span></p>
+            <p><strong>Teacher Action:</strong> <span id="dash-action">---</span></p>
+            <div style="margin-top: 15px; text-align: center;">
+                <label><input type="checkbox" id="ready-print"> I have reviewed all my answers.</label>
+                <br>
+                <button class="btn" style="background-color: var(--primary); font-size: 1.2em; margin-top: 10px;" onclick="prepareAndPrint()">🖨️ Export / Print as PDF</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Global State
+    let score = 0;
+    const MAX_SCORE = 40;
+    let timers = {};
+    let timeSpent = {1:0, 2:0, 3:0, 4:0, 6:0, 7:0, 8:0};
+    let activeIntervals = {};
+
+    function updateScore(points) {
+        score += points;
+        document.getElementById('total-score').innerText = score;
+        document.getElementById('dash-score').innerText = score;
+    }
+
+    // Input Syncing to Dashboard
+    const inputs = ['student-name', 'student-grade', 'student-section', 'current-date', 'teacher-action'];
+    const dashTargets = ['dash-name', 'dash-grade', 'dash-sec', 'dash-date', 'dash-action'];
+    
+    inputs.forEach((id, index) => {
+        document.getElementById(id).addEventListener('change', (e) => {
+            document.getElementById(dashTargets[index]).innerText = e.target.value || '---';
+        });
+    });
+
+    // Timer Logic
+    function startTimer(timerId, minutes) {
+        if(activeIntervals[timerId]) return; // Already running
+
+        const display = document.querySelector(`.stage-timer[onclick*="${timerId}"]`);
+        let time = minutes * 60;
+        const stageNum = timerId.split('-')[1];
+
+        activeIntervals[timerId] = setInterval(() => {
+            time--;
+            timeSpent[stageNum]++;
+            
+            // Format time spent for dashboard
+            const spentMin = Math.floor(timeSpent[stageNum] / 60);
+            const spentSec = timeSpent[stageNum] % 60;
+            document.getElementById(`time-log-${stageNum}`).innerText = 
+                `${spentMin.toString().padStart(2,'0')}:${spentSec.toString().padStart(2,'0')}`;
+
+            if(time < 0) {
+                clearInterval(activeIntervals[timerId]);
+                display.innerText = "⏱ Time Up";
+                display.classList.add('timer-danger');
+                return;
+            }
+
+            const min = Math.floor(time / 60);
+            const sec = time % 60;
+            display.innerText = `⏱ ${min}:${sec.toString().padStart(2, '0')}`;
+
+            if(time < 60) {
+                display.classList.add('timer-warning');
+            }
+        }, 1000);
+        
+        display.onclick = null; // Prevent multiple clicks
+    }
+
+    // Stage 1 Logic
+    let selectedPhish = null;
+    function selectPhishing(element, isReal) {
+        document.querySelectorAll('.phishing-img').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedPhish = isReal;
+    }
+
+    function checkEntry() {
+        if(selectedPhish === null) return alert("Select an image first!");
+        const reason = document.getElementById('entry-response').value.trim();
+        if(reason.length < 5) return alert("Please provide a reasoning.");
+
+        const fb = document.getElementById('entry-feedback');
+        fb.classList.remove('hidden', 'correct', 'incorrect');
+        
+        if(selectedPhish === false) { // Left one is fake (instgram)
+            fb.innerText = "Correct! The left URL is missing the 'a' (instgram). This is a phishing threat. (+5 pts)";
+            fb.classList.add('correct');
+            updateScore(5);
+        } else {
+            fb.innerText = "Incorrect. Look closely at the URL on the left. It says 'instgram.com'. The right one is real.";
+            fb.classList.add('incorrect');
+        }
+        event.target.disabled = true;
+    }
+
+    // Stage 3 Logic
+    let s1Word = null, s2Word = null;
+    function selectOddOne(set, element, word) {
+        document.querySelectorAll(`#${set}-options .word-btn`).forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        if(set === 'set1') s1Word = word;
+        if(set === 'set2') s2Word = word;
+    }
+
+    function checkVocab() {
+        if(!s1Word || !s2Word) return alert("Select an odd one out for both sets.");
+        const ex1 = document.getElementById('vocab-explain-1').value.trim();
+        const ex2 = document.getElementById('vocab-explain-2').value.trim();
+        if(ex1.length < 5 || ex2.length < 5) return alert("Please provide explanations.");
+
+        const fb = document.getElementById('vocab-feedback');
+        fb.classList.remove('hidden', 'correct', 'incorrect');
+        
+        let pts = 0;
+        let msg = "";
+        if(s1Word === 'Firewall') { pts+=5; msg += "Set 1 Correct: Firewall is trustworthy. "; }
+        else { msg += "Set 1 Incorrect (Hint: Which one protects you?). "; }
+        
+        if(s2Word === '100% Guaranteed') { pts+=5; msg += "Set 2 Correct: 100% Guaranteed is not a term of likelihood (probability)."; }
+        else { msg += "Set 2 Incorrect (Hint: Likelihood deals with probability)."; }
+
+        fb.innerText = msg + ` (+${pts} pts)`;
+        fb.classList.add(pts === 10 ? 'correct' : 'incorrect');
+        if(pts>0) updateScore(pts);
+        event.target.disabled = true;
+    }
+
+    // Stage 5 Logic
+    function checkPrediction() {
+        const pred = document.getElementById('model-prediction').value.trim().toLowerCase();
+        const fb = document.getElementById('prediction-feedback');
+        fb.classList.remove('hidden', 'correct', 'incorrect');
+        
+        if(pred.includes("threat detected") || pred.includes("weak")) {
+            fb.innerText = "Correct! 'apple' is only 5 characters, which is less than 8, triggering the threat print statement. (+5 pts)";
+            fb.classList.add('correct');
+            updateScore(5);
+        } else {
+            fb.innerText = "Incorrect. Re-read the IF condition. 'apple' is 5 letters long. Is 5 < 8?";
+            fb.classList.add('incorrect');
+        }
+        event.target.disabled = true;
+    }
+
+    // Stage 6 Logic
+    function checkWeDo() {
+        const like = document.getElementById('we-do-likelihood').value;
+        const c1 = document.getElementById('we-do-code-1').value.replace(/['"]/g, '').trim().toLowerCase();
+        const c2 = document.getElementById('we-do-code-2').value.replace(/['"]/g, '').trim().toLowerCase();
+        
+        const fb = document.getElementById('wedo-feedback');
+        fb.classList.remove('hidden', 'correct', 'incorrect');
+
+        if(like === 'high' && c1 === 'location' && c2 === 'calculator') {
+            fb.innerText = "Excellent logic! High likelihood of a threat, and the exact string matches are correct. (+10 pts)";
+            fb.classList.add('correct');
+            updateScore(10);
+            event.target.disabled = true;
+        } else {
+            fb.innerText = "Not quite. A calculator needing GPS is a HIGH likelihood threat. For code, ensure you typed exactly location and calculator inside the inputs.";
+            fb.classList.add('incorrect');
+        }
+    }
+
+    // Stage 7 Logic (Basic Simulator)
+    function simulateRun() {
+        const code = document.getElementById('student-code').value;
+        const consoleOut = document.getElementById('console-output');
+        
+        // Simple heuristic check for the requirements
+        let output = "> Simulating URL Input: 'http://www.test.com'\n";
+        
+        if(code.includes('if') && code.includes('in') && code.includes('http://')) {
+            output += "> Code Analysis: Core syntax found.\n> Result: Warning! Insecure connection detected.\n\n> SCORE: +10 Points!";
+            updateScore(10);
+        } else if (code.trim() === "") {
+             output += "> Error: Code area is empty.";
+        } else {
+            output += "> Code Analysis: Missing 'in' operator, 'if' statement, or 'http://' string check.\n> Result: Code did not execute expected security warning.";
+        }
+        
+        consoleOut.innerText = output;
+    }
+
+    // Stage 8 Logic
+    function selectTrafficLight(element) {
+        document.querySelectorAll('.light-btn').forEach(el => el.classList.remove('selected'));
+        element.classList.add('selected');
+        const val = element.getAttribute('data-val');
+        document.getElementById('traffic-light-status').value = val;
+        
+        let statusText = "🟢 Independently";
+        if(val === 'yellow') statusText = "🟡 With Help";
+        if(val === 'red') statusText = "🔴 Need Practice";
+        document.getElementById('dash-traffic').innerText = statusText;
+    }
+
+    // Print Function
+    function prepareAndPrint() {
+        if(!document.getElementById('ready-print').checked) {
+            alert("Please check the confirmation box before printing.");
+            return;
+        }
+        
+        // Stop all timers
+        for(let id in activeIntervals) { clearInterval(activeIntervals[id]); }
+        
+        // Replace inputs with text for cleaner printing if desired, 
+        // but native inputs print fine with the provided CSS.
+        
+        window.print();
+    }
+
+</script>
+</body>
+</html>
