@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 11 App Design - DMES Interactive Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --secondary: #0f172a;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    /* Header & Student Metadata Card */
+    .header-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      padding: 32px 28px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border-bottom: 4px solid var(--accent);
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+
+    .header-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .header-subtitle {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    /* Metadata Form Grid */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .meta-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .meta-field input, .meta-field select {
+      width: 100%;
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .meta-field input:focus, .meta-field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Dynamic Unit Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      min-width: 210px;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: left;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-tab-btn .tab-sub {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+
+    .nav-tab-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .nav-tab-btn.active .tab-sub {
+      color: var(--primary);
+    }
+
+    /* Floating Score & Status Pill */
+    .floating-hud {
+      position: sticky;
+      top: 16px;
+      z-index: 40;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .hud-badge {
+      background: var(--primary);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+
+    /* DMES Stage Cards */
+    .dmes-stage-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: border-color 0.2s ease;
+    }
+
+    .dmes-stage-card:focus-within {
+      border-color: #93c5fd;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+    }
+
+    .stage-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stage-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 8px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .stage-heading {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    /* Stage Independent Timer */
+    .stage-timer-widget {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .stage-timer-widget.running {
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #7dd3fc;
+    }
+
+    .stage-timer-widget.expiring {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* Content Typography */
+    .content-box {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .content-box p {
+      margin-bottom: 10px;
+    }
+
+    .highlight-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 0.92rem;
+    }
+
+    .highlight-box.warning {
+      border-left-color: var(--warning);
+      background: #fffbeb;
+    }
+
+    .highlight-box.success {
+      border-left-color: var(--success);
+      background: #f0fdf4;
+    }
+
+    /* Interactive Elements */
+    .interactive-panel {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    /* Code Monospace Blocks */
+    .code-block {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      overflow-x: auto;
+      margin: 12px 0;
+      line-height: 1.5;
+    }
+
+    /* Checkbox & Lists */
+    .criteria-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .criteria-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+    }
+
+    .criteria-item input[type="checkbox"] {
+      margin-top: 4px;
+      width: 17px;
+      height: 17px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Form Fields & Textareas */
+    textarea.student-input {
+      width: 100%;
+      min-height: 90px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+      margin-top: 8px;
+    }
+
+    textarea.student-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Multiple Choice & Quiz Options */
+    .mcq-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .mcq-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition: all 0.15s;
+    }
+
+    .mcq-label:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .mcq-label.correct {
+      background: #f0fdf4 !important;
+      border-color: var(--success) !important;
+      color: #166534;
+      font-weight: 600;
+    }
+
+    .mcq-label.incorrect {
+      background: #fef2f2 !important;
+      border-color: var(--danger) !important;
+      color: #991b1b;
+    }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      display: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* Visualizer Canvas Containers */
+    .visualizer-wrapper {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 20px;
+      color: white;
+      margin: 16px 0;
+    }
+
+    .vis-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .vis-stage {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      min-height: 180px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Traffic Light Reflection */
+    .traffic-light-grid {
+      display: flex;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .traffic-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .traffic-btn[data-level="green"].selected {
+      border-color: var(--success);
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .traffic-btn[data-level="yellow"].selected {
+      border-color: var(--warning);
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .traffic-btn[data-level="red"].selected {
+      border-color: var(--danger);
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Completion Dashboard */
+    .dashboard-card {
+      background: #0f172a;
+      color: white;
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      margin-top: 36px;
+      border: 2px solid #334155;
+    }
+
+    .dashboard-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin: 20px 0;
+    }
+
+    .dash-stat-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .dash-stat-box .dash-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .dash-stat-box .dash-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    /* Collapsible Hints */
+    details.hint-accordion {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 12px 0;
+    }
+
+    details.hint-accordion summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    details.hint-accordion p {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Print Formatting Rules */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+
+      .floating-hud, .nav-tabs, .btn, .vis-controls, details.hint-accordion summary {
+        display: none !important;
+      }
+
+      .container {
+        max-width: 100% !important;
+      }
+
+      .header-card {
+        background: none !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+        box-shadow: none !important;
+        padding: 16px !important;
+      }
+
+      .header-subtitle {
+        color: #444 !important;
+      }
+
+      .meta-grid {
+        background: none !important;
+        border: 1px solid #ccc !important;
+      }
+
+      .meta-field label {
+        color: #000 !important;
+      }
+
+      .dmes-stage-card {
+        box-shadow: none !important;
+        border: 1px solid #333 !important;
+        page-break-inside: avoid;
+        margin-bottom: 16px !important;
+      }
+
+      .dashboard-card {
+        background: none !important;
+        color: #000 !important;
+        border: 2px solid #000 !important;
+        page-break-before: always;
+      }
+
+      .dash-stat-box {
+        background: none !important;
+        border: 1px solid #999 !important;
+      }
+
+      .dash-stat-box .dash-val {
+        color: #000 !important;
+      }
+
+      textarea.student-input {
+        border: 1px solid #666 !important;
+        min-height: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Floating HUD: Marks & Activity State -->
+  <div class="floating-hud">
+    <div class="hud-stat">
+      <span>UNIT MASTERY SCORE:</span>
+      <span class="hud-badge" id="hud-total-score">0 / 40 PTS</span>
+    </div>
+    <div class="hud-stat">
+      <span>STAGE TIMER:</span>
+      <span id="hud-active-timer" style="font-family: 'JetBrains Mono', monospace; color: #38bdf8;">--:--</span>
+    </div>
+    <div class="hud-stat">
+      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Export PDF Report</button>
+    </div>
+  </div>
+
+  <!-- Header Card & Student Info -->
+  <div class="header-card">
+    <span class="header-badge">American Curriculum • Grade 11 App Design</span>
+    <h1 class="header-title">Foundations of Computational Systems & Architecture</h1>
+    <p class="header-subtitle">Instructor: Ms. Jyothu Ramesh • DMES 9-Stage Interactive Digital Workbook</p>
+
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label>Student Full Name</label>
+        <input type="text" id="meta-student-name" placeholder="Enter full name" oninput="syncStudentInfo()">
+      </div>
+      <div class="meta-field">
+        <label>Grade Level</label>
+        <select id="meta-grade" onchange="syncStudentInfo()">
+          <option value="Grade 11" selected>Grade 11</option>
+          <option value="Grade 9">Grade 9</option>
+          <option value="Grade 10">Grade 10</option>
+          <option value="Grade 12">Grade 12</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <label>Section</label>
+        <select id="meta-section" onchange="syncStudentInfo()">
+          <option value="A" selected>Class A</option>
+          <option value="B">Class B</option>
+          <option value="C">Class C</option>
+          <option value="F">Class F</option>
+          <option value="G">Class G</option>
+          <option value="H">Class H</option>
+        </select>
+      </div>
+      <div class="meta-field">
+        <label>Submission Date</label>
+        <input type="date" id="meta-date" onchange="syncStudentInfo()">
+      </div>
+    </div>
+  </div>
+
+  <!-- Lesson Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab-btn active" onclick="switchLesson(1)" id="tab-btn-1">
+      <span>LESSON 1</span>
+      <span class="tab-sub">What is a Computer?</span>
+    </button>
+    <button class="nav-tab-btn" onclick="switchLesson(2)" id="tab-btn-2">
+      <span>LESSON 2</span>
+      <span class="tab-sub">Input & Output Ecosystems</span>
+    </button>
+    <button class="nav-tab-btn" onclick="switchLesson(3)" id="tab-btn-3">
+      <span>LESSON 3</span>
+      <span class="tab-sub">Computational Processing Logic</span>
+    </button>
+    <button class="nav-tab-btn" onclick="switchLesson(4)" id="tab-btn-4">
+      <span>LESSON 4</span>
+      <span class="tab-sub">Data Persistence & IOSP Synthesis</span>
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- LESSON 1 WRAPPER -->
+  <!-- ========================================================================= -->
+  <div id="lesson-module-1" class="lesson-view">
+
+    <!-- STAGE 1: ENTRY -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s1', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 1 • ENTRY (2 MIN)</span>
+          <h2 class="stage-heading">The "Is It Thinking?" Mystery Artifact Reveal</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s1">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <p>Examine the two artifacts below: an <strong>antique 1920s mechanical cash register</strong> (gears, hand crank) and a <strong>modern automated traffic light controller</strong>. Both accept user interactions (pressing a key / pedestrian button) and generate an output. Which one performs true <em>computational "thinking work"</em>?</p>
+      </div>
+      <div class="interactive-panel">
+        <label style="font-weight: 600; font-size: 0.9rem;">Your Engineering Prediction:</label>
+        <textarea class="student-input" id="l1-entry-resp" placeholder="State which machine executes 'thinking work' and why the other does not..."></textarea>
+      </div>
+    </div>
+
+    <!-- STAGE 2: OBJECTIVES & SUCCESS CRITERIA -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s2', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 2 • OBJECTIVES & SUCCESS CRITERIA (2 MIN)</span>
+          <h2 class="stage-heading">Target Learning Competencies</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s2">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box">
+          <strong>Learning Objective:</strong> Deconstruct everyday mechanical, electrical, and embedded devices to classify them as computers or non-computers based on their ability to manipulate information to solve problems.
+        </div>
+        <p style="font-weight: 700; margin-top: 14px;">Self-Assessment Success Criteria (Check off as demonstrated):</p>
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <input type="checkbox" id="l1-crit-1" onchange="recordCriteria()">
+            <label for="l1-crit-1"><strong>SC 1:</strong> I can define a computer as a machine that processes and manipulates information rather than just performing physical work.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l1-crit-2" onchange="recordCriteria()">
+            <label for="l1-crit-2"><strong>SC 2:</strong> I can formulate objective criteria to justify whether an embedded device (e.g., microwave, modern car, traffic light) qualifies as a computer.</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STAGE 3: DO NOW (VOCABULARY) -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s3', 240)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 3 • DO NOW (4 MIN)</span>
+          <h2 class="stage-heading">Semantic Detective: Systems Vocabulary [3 PTS]</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s3">⏱ 04:00</div>
+      </div>
+      <div class="content-box">
+        <p>Complete each engineering statement with the correct academic term: <code>awareness</code>, <code>perception</code>, or <code>behavior</code>.</p>
+        
+        <div style="margin: 16px 0;">
+          <p>1. A vehicle's collision avoidance system requires situational 
+            <select id="l1-vocab-1" style="padding: 4px 8px; border-radius: 4px;">
+              <option value="">-- select --</option>
+              <option value="perception">perception</option>
+              <option value="awareness">awareness</option>
+              <option value="behavior">behavior</option>
+            </select> to identify road obstacles.
+          </p>
+        </div>
+        <div style="margin: 16px 0;">
+          <p>2. Sensor noise can distort a system's algorithmic 
+            <select id="l1-vocab-2" style="padding: 4px 8px; border-radius: 4px;">
+              <option value="">-- select --</option>
+              <option value="awareness">awareness</option>
+              <option value="perception">perception</option>
+              <option value="behavior">behavior</option>
+            </select> of its physical environment.
+          </p>
+        </div>
+        <div style="margin: 16px 0;">
+          <p>3. A computer system's programmed 
+            <select id="l1-vocab-3" style="padding: 4px 8px; border-radius: 4px;">
+              <option value="">-- select --</option>
+              <option value="behavior">behavior</option>
+              <option value="awareness">awareness</option>
+              <option value="perception">perception</option>
+            </select> dictates how it responds to real-time inputs.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="checkL1Vocab()">Verify Vocabulary (3 Pts)</button>
+        <div class="feedback-banner" id="l1-vocab-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: EXPLICIT INSTRUCTION (TEACH TIME) -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s4', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 4 • EXPLICIT INSTRUCTION (10 MIN)</span>
+          <h2 class="stage-heading">Information Machines vs. Physical Tools</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s4">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Core Concept:</strong> Computers were historically room-sized numerical calculators (like ENIAC programmed by Bartik and Spence). Today, computers are embedded into consumer appliances. A computer is formally defined as: <em>a machine that works with information to solve problems</em>.</p>
+        <div class="highlight-box warning">
+          <strong>The Universal Misconception:</strong> A computer is NOT defined by having a screen, keyboard, mouse, or internet connectivity! A toaster or hand-crank sharpener transforms electricity into heat or physical friction. A digital microwave or autonomous vehicle reads sensors, runs logic, and changes state—making them true embedded computers.
+        </div>
+        <p><strong>Guiding Checkpoint Question:</strong> If a machine runs solely on gears, pulleys, or simple closed analog circuits without memory or data transformation, can it be a computer?</p>
+      </div>
+    </div>
+
+    <!-- STAGE 5: TEACHER MODEL (I DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s5', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 5 • TEACHER MODEL (I DO)</span>
+          <h2 class="stage-heading">Deconstructing: Electric Sharpener vs. Microwave Oven</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s5">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Teacher Think-Aloud:</strong></p>
+        <ul style="padding-left: 20px; margin-bottom: 12px;">
+          <li><strong>Step 1 (Examine Function):</strong> "The electric pencil sharpener receives a pencil, closes a mechanical switch, activates an electric motor, and spins blades. Does it manipulate data? No. It transforms electrical energy directly into physical friction. It is a <em>mechanical tool</em>."</li>
+          <li><strong>Step 2 (Examine Information Flow):</strong> "Now look at the microwave. You enter keypad digits (time/power), or a sensor reads food steam humidity. Its internal microcontroller takes that data, calculates a countdown, executes memory routines, and toggles heating cycles. It makes algorithmic decisions based on data. Therefore, the microwave <strong>contains an embedded computer</strong>."</li>
+        </ul>
+        
+        <!-- Interactive Visualizer: Gear vs Microcontroller Simulator -->
+        <div class="visualizer-wrapper">
+          <h4 style="margin-bottom: 10px; color: #38bdf8;">Visualizer: Mechanical Energy vs. Computational Information Logic</h4>
+          <div class="vis-controls">
+            <button class="btn btn-outline btn-sm" style="color: white; border-color: #475569;" onclick="runSim('gear')">Run Mechanical Circuit (Sharpener)</button>
+            <button class="btn btn-primary btn-sm" onclick="runSim('cpu')">Run Computational Controller (Microwave)</button>
+          </div>
+          <div class="vis-stage" id="l1-vis-canvas">
+            <span style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">Select a system mode to observe energy vs information routing...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 6: GUIDED PRACTICE (WE DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s6', 360)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 6 • GUIDED PRACTICE (WE DO)</span>
+          <h2 class="stage-heading">The Controversial Artifact Showdown</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s6">⏱ 06:00</div>
+      </div>
+      <div class="content-box">
+        <p>Collaborative Analysis: Consider a <strong>Modern Hybrid Car (Toyota Prius)</strong> vs. an <strong>Antique Pipe Organ</strong>.</p>
+        <div class="interactive-panel">
+          <p><strong>Checkpoint Question:</strong> When an organist presses a key, does it manipulate data, or open an air valve? Compare this with how a Prius handles battery/gas torque distribution.</p>
+          <textarea class="student-input" id="l1-wedo-resp" placeholder="Synthesize partner consensus: Why does the Prius contain dozens of computers while the grand pipe organ contains zero?"></textarea>
+          <details class="hint-accordion">
+            <summary>Need a Hint?</summary>
+            <p>Hint: Ask yourself: "Where does information get stored or conditionally transformed?" Pressing an organ key mechanically directs pressurized air through a pipe. A hybrid vehicle processor continuously samples battery temperature and wheel speeds to calculate power splits.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 7: INDEPENDENT APPLICATION (YOU DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s7', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 7 • INDEPENDENT APPLICATION (YOU DO) [4 PTS]</span>
+          <h2 class="stage-heading">8-Artifact Computational Classification Lab</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s7">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p>Classify each artifact as either <strong>COMPUTER</strong> or <strong>NOT A COMPUTER</strong> and formulate a 1-sentence technical defense based on its information-processing capability.</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 14px;">
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>1. Smoke Detector</strong>
+            <select id="l1-art-1" style="width: 100%; margin: 6px 0; padding: 6px;">
+              <option value="">-- Classify --</option>
+              <option value="Computer">Computer</option>
+              <option value="Not a Computer">Not a Computer</option>
+            </select>
+            <input type="text" id="l1-art-just-1" placeholder="1-sentence defense..." style="width: 100%; font-size: 0.8rem; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>2. Wooden Abacus</strong>
+            <select id="l1-art-2" style="width: 100%; margin: 6px 0; padding: 6px;">
+              <option value="">-- Classify --</option>
+              <option value="Computer">Computer</option>
+              <option value="Not a Computer">Not a Computer</option>
+            </select>
+            <input type="text" id="l1-art-just-2" placeholder="1-sentence defense..." style="width: 100%; font-size: 0.8rem; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>3. Digital Dishwasher</strong>
+            <select id="l1-art-3" style="width: 100%; margin: 6px 0; padding: 6px;">
+              <option value="">-- Classify --</option>
+              <option value="Computer">Computer</option>
+              <option value="Not a Computer">Not a Computer</option>
+            </select>
+            <input type="text" id="l1-art-just-3" placeholder="1-sentence defense..." style="width: 100%; font-size: 0.8rem; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>4. Rotary Dial Telephone</strong>
+            <select id="l1-art-4" style="width: 100%; margin: 6px 0; padding: 6px;">
+              <option value="">-- Classify --</option>
+              <option value="Computer">Computer</option>
+              <option value="Not a Computer">Not a Computer</option>
+            </select>
+            <input type="text" id="l1-art-just-4" placeholder="1-sentence defense..." style="width: 100%; font-size: 0.8rem; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 16px;" onclick="gradeL1Lab()">Submit Artifact Classifications (4 Pts)</button>
+        <div class="feedback-banner" id="l1-lab-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 8: HIGH-IMPACT PROGRESS CHECK -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s8', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 8 • HIGH-IMPACT PROGRESS CHECK [3 PTS]</span>
+          <h2 class="stage-heading">Diagnostic Formative Checkpoint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s8">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Item 1:</strong> Which of the following statements provides the rigorous computer science definition of a computer?</p>
+        <div class="mcq-options" id="l1-mcq-wrap">
+          <label class="mcq-label" onclick="selectMCQ(this, 'l1-q1', 'A')">
+            <input type="radio" name="l1-q1" value="A"> A) A device containing a touchscreen and wireless internet modem.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l1-q1', 'B')">
+            <input type="radio" name="l1-q1" value="B"> B) An automated electromechanical machine that replaces human muscle power.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l1-q1', 'C')">
+            <input type="radio" name="l1-q1" value="C"> C) A machine that works with information to solve thinking problems.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l1-q1', 'D')">
+            <input type="radio" name="l1-q1" value="D"> D) A system engineered solely out of silicon microchips and binary registers.
+          </label>
+        </div>
+
+        <p style="margin-top: 16px;"><strong>Item 2:</strong> A robotic vacuum uses optical sensors to detect walls, builds an internal room floor map, and alters its motor path. Explain in one technical sentence why it is classified as a computer.</p>
+        <textarea class="student-input" id="l1-q2-resp" placeholder="Identify the input, the internal data manipulation, and the output decision..."></textarea>
+
+        <p style="margin-top: 16px; font-weight: 700;">Student Self-Assessment Traffic Light:</p>
+        <div class="traffic-light-grid">
+          <button type="button" class="traffic-btn" data-level="green" onclick="setTraffic(this, 'l1')">🟢 Independently Mastered</button>
+          <button type="button" class="traffic-btn" data-level="yellow" onclick="setTraffic(this, 'l1')">🟡 Progressing With Assistance</button>
+          <button type="button" class="traffic-btn" data-level="red" onclick="setTraffic(this, 'l1')">🔴 Requires Targeted Reteaching</button>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 14px;" onclick="checkL1Hinge()">Submit Diagnostic Check (3 Pts)</button>
+        <div class="feedback-banner" id="l1-hinge-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 9: FEEDBACK & INSTRUCTIONAL ADJUSTMENT -->
+    <div class="dmes-stage-card" onclick="startTimer('l1-s9', 180)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 9 • FEEDBACK & ADJUSTMENT (3 MIN)</span>
+          <h2 class="stage-heading">Metacognitive Reflection & Instructional Pathway</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l1-s9">⏱ 03:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box success">
+          <strong>Teacher Diagnostic Feedback:</strong> "Remember: smoke detectors do not just emit loud sound; they continuously sample ambient air particles, convert analog sensor voltage into digital counts, compare that count to an alarm threshold constant, and trigger the siren alert state. That is genuine embedded computing."
+        </div>
+        <p><strong>Instructional Adjustment Decision:</strong></p>
+        <div id="l1-adjust-box" style="font-weight: 600; color: var(--primary); margin-bottom: 12px;">Complete the Stage 8 Checkpoint to reveal your tailored pathway.</div>
+        <label style="font-weight: 600; font-size: 0.9rem;">What misconception or mistake did you correct during this lesson?</label>
+        <textarea class="student-input" id="l1-refl" placeholder="Reflect on your mental model of what a computer truly is..."></textarea>
+      </div>
+    </div>
+
+  </div> <!-- END LESSON 1 -->
+
+  <!-- ========================================================================= -->
+  <!-- LESSON 2 WRAPPER -->
+  <!-- ========================================================================= -->
+  <div id="lesson-module-2" class="lesson-view" style="display: none;">
+
+    <!-- STAGE 1: ENTRY -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s1', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 1 • ENTRY (2 MIN)</span>
+          <h2 class="stage-heading">Reverse-Engineering the "Pet Matcher"</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s1">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <p>Imagine designing an intelligent mobile app recommending pets for apartment tenants. What exact data must you extract from the user, and what multi-modal outputs will the smartphone present back?</p>
+      </div>
+      <div class="interactive-panel">
+        <textarea class="student-input" id="l2-entry-resp" placeholder="List extracted inputs (e.g., budget, allergy status) and generated outputs (e.g., photo, sound, map)..."></textarea>
+      </div>
+    </div>
+
+    <!-- STAGE 2: OBJECTIVES & SUCCESS CRITERIA -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s2', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 2 • OBJECTIVES & SUCCESS CRITERIA</span>
+          <h2 class="stage-heading">Target Learning Competencies</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s2">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box">
+          <strong>Learning Objective:</strong> Classify and trace data flows within mobile applications into user-directed, sensor-based, and network-derived inputs versus multi-modal outputs.
+        </div>
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <input type="checkbox" id="l2-crit-1" onchange="recordCriteria()">
+            <label for="l2-crit-1"><strong>SC 1:</strong> I can define Input as information received and Output as information delivered.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l2-crit-2" onchange="recordCriteria()">
+            <label for="l2-crit-2"><strong>SC 2:</strong> I can distinguish direct user inputs (touch) from automated ambient sensor/network inputs (GPS, accelerometer, APIs).</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l2-crit-3" onchange="recordCriteria()">
+            <label for="l2-crit-3"><strong>SC 3:</strong> I can map complete Input-to-Output pathways for an original mobile application feature.</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STAGE 3: DO NOW (VOCABULARY) -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s3', 240)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 3 • DO NOW (4 MIN)</span>
+          <h2 class="stage-heading">Vocabulary Perspective Matrix [3 PTS]</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s3">⏱ 04:00</div>
+      </div>
+      <div class="content-box">
+        <p>Apply the terms <code>perspective</code>, <code>controversial</code>, or <code>influence</code> to these mobile engineering scenarios:</p>
+        <div style="margin: 14px 0;">
+          <p>1. From an app designer's 
+            <select id="l2-vocab-1">
+              <option value="">-- select --</option>
+              <option value="controversial">controversial</option>
+              <option value="perspective">perspective</option>
+              <option value="influence">influence</option>
+            </select>, background location tracking improves convenience, but from a user's view it compromises privacy.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>2. Allowing an app to sample microphone data without notification is a highly 
+            <select id="l2-vocab-2">
+              <option value="">-- select --</option>
+              <option value="perspective">perspective</option>
+              <option value="controversial">controversial</option>
+              <option value="influence">influence</option>
+            </select> practice.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>3. Ambient sensor inputs like device geolocation strongly 
+            <select id="l2-vocab-3">
+              <option value="">-- select --</option>
+              <option value="perspective">perspective</option>
+              <option value="influence">influence</option>
+              <option value="controversial">controversial</option>
+            </select> targeted advertisements.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="checkL2Vocab()">Verify Vocabulary (3 Pts)</button>
+        <div class="feedback-banner" id="l2-vocab-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: EXPLICIT INSTRUCTION (TEACH TIME) -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s4', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 4 • EXPLICIT INSTRUCTION (10 MIN)</span>
+          <h2 class="stage-heading">The Modern Smartphone I/O Ecosystem</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s4">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Core Concept:</strong> Input is information computers acquire from users, physical sensors, or remote servers. Output is information computers project back to users, hardware actuators, or networks.</p>
+        <div class="highlight-box">
+          <strong>Key Distinction:</strong> Inputs are NOT limited to human keystrokes! Modern phones gather ambient inputs passively via gyroscopes, light sensors, GPS chips, and network web APIs. Outputs are not just screen text—they include spatial audio, haptic vibration motors, and LED strobes.
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 5: TEACHER MODEL (I DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s5', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 5 • TEACHER MODEL (I DO)</span>
+          <h2 class="stage-heading">Architecture Deconstruction: "Smart Running Companion"</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s5">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Step-by-Step Data Flow Trace:</strong></p>
+        <ol style="padding-left: 20px; margin-bottom: 12px;">
+          <li><strong>Direct User Input:</strong> Runner taps onscreen "Start Run" button.</li>
+          <li><strong>Ambient Hardware Sensor:</strong> Internal GPS chip samples latitude/longitude; accelerometer registers footsteps.</li>
+          <li><strong>Network Cloud Input:</strong> Weather API downloads local humidity and temperature JSON feed.</li>
+          <li><strong>Multi-Modal Output:</strong> Visual rendering of route on OLED display, audio pace coach in earphones, and tactile haptic vibration for interval targets.</li>
+        </ol>
+
+        <!-- Interactive Visualizer: Multi-Modal I/O Simulator -->
+        <div class="visualizer-wrapper">
+          <h4 style="margin-bottom: 10px; color: #38bdf8;">Visualizer: Multi-Source Signal Flow Engine</h4>
+          <div class="vis-controls">
+            <button class="btn btn-outline btn-sm" style="color: white; border-color: #475569;" onclick="triggerIO('touch')">Simulate Direct Touch Input</button>
+            <button class="btn btn-outline btn-sm" style="color: white; border-color: #475569;" onclick="triggerIO('gps')">Simulate Ambient Sensor (GPS)</button>
+            <button class="btn btn-primary btn-sm" onclick="triggerIO('api')">Simulate Cloud Network Stream</button>
+          </div>
+          <div class="vis-stage" id="l2-vis-canvas">
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-align: center;">
+              [INPUT CHANNEL IDLE] Click a signal source above to execute pipeline...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 6: GUIDED PRACTICE (WE DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s6', 360)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 6 • GUIDED PRACTICE (WE DO)</span>
+          <h2 class="stage-heading">"Improved Pet Finder" Deconstruction</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s6">⏱ 06:00</div>
+      </div>
+      <div class="content-box">
+        <p>The basic Pet Chooser only asked if you liked dogs or cats. The <em>Improved Pet App</em> automatically locates nearby animal shelters with matching breeds. Identify which data source provides each input:</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>A. User Pet Preference</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Selecting cat vs dog)</p>
+            <span class="stage-pill" style="margin-top: 6px;">Direct User Input</span>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>B. Current Device Coordinates</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Latitude / Longitude)</p>
+            <span class="stage-pill" style="margin-top: 6px; background: #e0f2fe; color: #0369a1;">Phone Sensor (GPS)</span>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>C. Shelter Inventory & Hours</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Database availability)</p>
+            <span class="stage-pill" style="margin-top: 6px; background: #fef3c7; color: #92400e;">Remote Internet API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 7: INDEPENDENT APPLICATION (YOU DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s7', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 7 • INDEPENDENT APPLICATION (YOU DO) [4 PTS]</span>
+          <h2 class="stage-heading">Original Mobile App Innovation Blueprint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s7">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p>Architect an original mobile app feature. You must specify at least <strong>1 Direct User Input</strong>, <strong>1 Hardware Sensor Input</strong>, <strong>1 Remote Cloud API Input</strong>, and <strong>2 distinct forms of Output</strong> (visual, audio, or tactile).</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
+          <div>
+            <label style="font-weight: 700; font-size: 0.85rem;">App Name & Core Purpose:</label>
+            <input type="text" id="l2-app-name" placeholder="e.g., SafeCycle Dubai" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="font-weight: 700; font-size: 0.85rem;">1. Direct User Input:</label>
+            <input type="text" id="l2-app-user-in" placeholder="e.g., Destination tap" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="font-weight: 700; font-size: 0.85rem;">2. Hardware Sensor Input:</label>
+            <input type="text" id="l2-app-sensor-in" placeholder="e.g., Accelerometer bump detection" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+          </div>
+          <div>
+            <label style="font-weight: 700; font-size: 0.85rem;">3. Remote Cloud API Input:</label>
+            <input type="text" id="l2-app-cloud-in" placeholder="e.g., Live traffic accident feed" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="font-weight: 700; font-size: 0.85rem;">4. Output Form 1 (Visual/Audio):</label>
+            <input type="text" id="l2-app-out-1" placeholder="e.g., Audio warning chime" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 6px;">
+
+            <label style="font-weight: 700; font-size: 0.85rem;">5. Output Form 2 (Tactile/Haptic):</label>
+            <input type="text" id="l2-app-out-2" placeholder="e.g., Handlebar vibration alert" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px;">
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 16px;" onclick="saveL2Blueprint()">Save Architecture Blueprint (4 Pts)</button>
+        <div class="feedback-banner" id="l2-app-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 8: HIGH-IMPACT PROGRESS CHECK -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s8', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 8 • HIGH-IMPACT PROGRESS CHECK [3 PTS]</span>
+          <h2 class="stage-heading">Diagnostic Formative Checkpoint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s8">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Item 1:</strong> A customer scans a grocery barcode with a camera, and the phone screen shows its nutrition rating and price. Identify the precise Input and Output.</p>
+        <textarea class="student-input" id="l2-q1-resp" placeholder="State input hardware & data, and output display..."></textarea>
+
+        <p style="margin-top: 14px;"><strong>Item 2:</strong> Which of the following represents an automated ambient sensor input rather than direct user input?</p>
+        <div class="mcq-options">
+          <label class="mcq-label" onclick="selectMCQ(this, 'l2-q2', 'A')">
+            <input type="radio" name="l2-q2" value="A"> A) Typing an account password into a login field.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l2-q2', 'B')">
+            <input type="radio" name="l2-q2" value="B"> B) Accelerometer detecting rotational tilt during a mobile driving game.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l2-q2', 'C')">
+            <input type="radio" name="l2-q2" value="C"> C) Selecting a radio button to choose a payment method.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l2-q2', 'D')">
+            <input type="radio" name="l2-q2" value="D"> D) Clicking a hyperlinked URL in an email message.
+          </label>
+        </div>
+
+        <p style="margin-top: 14px; font-weight: 700;">Student Self-Assessment Traffic Light:</p>
+        <div class="traffic-light-grid">
+          <button type="button" class="traffic-btn" data-level="green" onclick="setTraffic(this, 'l2')">🟢 Independently Mastered</button>
+          <button type="button" class="traffic-btn" data-level="yellow" onclick="setTraffic(this, 'l2')">🟡 Progressing With Assistance</button>
+          <button type="button" class="traffic-btn" data-level="red" onclick="setTraffic(this, 'l2')">🔴 Requires Targeted Reteaching</button>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 14px;" onclick="checkL2Hinge()">Submit Diagnostic Check (3 Pts)</button>
+        <div class="feedback-banner" id="l2-hinge-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 9: FEEDBACK & INSTRUCTIONAL ADJUSTMENT -->
+    <div class="dmes-stage-card" onclick="startTimer('l2-s9', 180)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 9 • FEEDBACK & ADJUSTMENT (3 MIN)</span>
+          <h2 class="stage-heading">Metacognitive Reflection & Instructional Pathway</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l2-s9">⏱ 03:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box warning">
+          <strong>Teacher Diagnostic Feedback:</strong> "Be careful: students often classify the smartphone camera as an output because 'it shows my face.' Hardware that captures light from the physical world into digital data is an <strong>INPUT</strong>. The screen that renders those pixels is the <strong>OUTPUT</strong>."
+        </div>
+        <label style="font-weight: 600; font-size: 0.9rem;">What mistake did you identify in distinguishing inputs from outputs?</label>
+        <textarea class="student-input" id="l2-refl" placeholder="Reflect on hardware boundaries..."></textarea>
+      </div>
+    </div>
+
+  </div> <!-- END LESSON 2 -->
+
+  <!-- ========================================================================= -->
+  <!-- LESSON 3 WRAPPER -->
+  <!-- ========================================================================= -->
+  <div id="lesson-module-3" class="lesson-view" style="display: none;">
+
+    <!-- STAGE 1: ENTRY -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s1', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 1 • ENTRY (2 MIN)</span>
+          <h2 class="stage-heading">The Birthday Paradox Logic Puzzle</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s1">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <p>A simple app asks for your birthdate numbers. If you enter today's date, it outputs: <em>"Happy Birthday! Celebrate!"</em> If you enter next week, it displays: <em>"Not your birthday yet!"</em> What invisible "thinking work" occurred behind the screen?</p>
+      </div>
+      <div class="interactive-panel">
+        <textarea class="student-input" id="l3-entry-resp" placeholder="Describe the internal comparison and conditional rules executed by the CPU..."></textarea>
+      </div>
+    </div>
+
+    <!-- STAGE 2: OBJECTIVES & SUCCESS CRITERIA -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s2', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 2 • OBJECTIVES & SUCCESS CRITERIA</span>
+          <h2 class="stage-heading">Target Learning Competencies</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s2">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box">
+          <strong>Learning Objective:</strong> Deconstruct and implement the four foundational computational processing routines (Conditionals/If-Then, Finding a Match, Counting, Comparing) to transform raw input streams into functional outputs.
+        </div>
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <input type="checkbox" id="l3-crit-1" onchange="recordCriteria()">
+            <label for="l3-crit-1"><strong>SC 1:</strong> I can define computational processing as the algorithmic operations that convert inputs into outputs.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l3-crit-2" onchange="recordCriteria()">
+            <label for="l3-crit-2"><strong>SC 2:</strong> I can classify an app feature into its dominant processing logic: if/then, counting, finding a match, or comparing.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l3-crit-3" onchange="recordCriteria()">
+            <label for="l3-crit-3"><strong>SC 3:</strong> I can construct pseudocode logic demonstrating multi-step processing routines.</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STAGE 3: DO NOW (VOCABULARY) -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s3', 240)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 3 • DO NOW (4 MIN)</span>
+          <h2 class="stage-heading">Debate & Standpoint Triad [3 PTS]</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s3">⏱ 04:00</div>
+      </div>
+      <div class="content-box">
+        <p>Complete each technical statement using: <code>debate</code>, <code>standpoint</code>, or <code>substantial</code>:</p>
+        <div style="margin: 14px 0;">
+          <p>1. Software engineers engaged in a rigorous technical 
+            <select id="l3-vocab-1">
+              <option value="">-- select --</option>
+              <option value="standpoint">standpoint</option>
+              <option value="debate">debate</option>
+              <option value="substantial">substantial</option>
+            </select> over whether cloud processing is faster than local on-device processing.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>2. From a cybersecurity 
+            <select id="l3-vocab-2">
+              <option value="">-- select --</option>
+              <option value="debate">debate</option>
+              <option value="standpoint">standpoint</option>
+              <option value="substantial">substantial</option>
+            </select>, storing minimal raw user data is the most defensible architecture.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>3. Optimizing the search algorithm produced a 
+            <select id="l3-vocab-3">
+              <option value="">-- select --</option>
+              <option value="debate">debate</option>
+              <option value="substantial">substantial</option>
+              <option value="standpoint">standpoint</option>
+            </select> reduction in execution latency.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="checkL3Vocab()">Verify Vocabulary (3 Pts)</button>
+        <div class="feedback-banner" id="l3-vocab-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: EXPLICIT INSTRUCTION (TEACH TIME) -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s4', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 4 • EXPLICIT INSTRUCTION (10 MIN)</span>
+          <h2 class="stage-heading">The Four Core Computational Processing Engines</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s4">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p>Processing is the algorithmic thinking work connecting input to output. The four universal operations are:</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 14px 0;">
+          <div class="highlight-box">
+            <strong>1. If/Then (Conditionals)</strong>
+            <p style="font-size: 0.85rem;">Branching execution based on Boolean truth: <code>IF score &gt;= 50 THEN "Pass"</code></p>
+          </div>
+          <div class="highlight-box">
+            <strong>2. Comparing</strong>
+            <p style="font-size: 0.85rem;">Evaluating mathematical magnitude or equality: <code>user_val &gt; secret_num</code></p>
+          </div>
+          <div class="highlight-box">
+            <strong>3. Finding a Match</strong>
+            <p style="font-size: 0.85rem;">Scanning collections/databases for an identical record query (e.g., authentication).</p>
+          </div>
+          <div class="highlight-box">
+            <strong>4. Counting (Accumulating)</strong>
+            <p style="font-size: 0.85rem;">Incrementing frequency counters on trigger events: <code>taps = taps + 1</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 5: TEACHER MODEL (I DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s5', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 5 • TEACHER MODEL (I DO)</span>
+          <h2 class="stage-heading">Deconstructing: "Guess the Number" Game</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s5">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Step-by-Step Logic Trace:</strong></p>
+        <div class="code-block">
+// Target secret_num = 75
+INPUT: user_guess = 42
+
+PROCESSING ROUTINE:
+1. COMPARING: Compare user_guess (42) against secret_num (75)
+2. IF/THEN BRANCHING:
+   IF user_guess &lt; secret_num THEN
+       OUTPUT: "Too Low! Guess higher."
+   ELSE IF user_guess &gt; secret_num THEN
+       OUTPUT: "Too High! Guess lower."
+   ELSE
+       OUTPUT: "Correct! You won!"
+3. COUNTING: attempts_counter = attempts_counter + 1
+
+OUTPUT: Render "Too Low!" banner &amp; update attempt badge to "Turn 1"
+        </div>
+        <p><em>Notice how this single action orchestrated THREE processing types in nanoseconds: Comparing, If/Then, and Counting!</em></p>
+      </div>
+    </div>
+
+    <!-- STAGE 6: GUIDED PRACTICE (WE DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s6', 360)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 6 • GUIDED PRACTICE (WE DO)</span>
+          <h2 class="stage-heading">Concurrent Logic Trace: "Fastest Finger Duel"</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s6">⏱ 06:00</div>
+      </div>
+      <div class="content-box">
+        <p>In "Fastest Finger", Player 1 rapidly presses 'S' while Player 2 taps 'K'. A tug-of-war meter updates in real time. When either score hits 50, a winner modal triggers. Identify the concurrent processing types:</p>
+        
+        <div class="interactive-panel">
+          <p><strong>1. On every single keystroke:</strong> Which processing type tracks the player's score? 
+            <select id="l3-we-1" style="padding: 4px;">
+              <option value="">-- select --</option>
+              <option value="counting">Counting</option>
+              <option value="matching">Finding a Match</option>
+            </select>
+          </p>
+          <p style="margin-top: 10px;"><strong>2. To move the tug-of-war bar:</strong> Which processing type evaluates <code>count_S - count_K</code>? 
+            <select id="l3-we-2" style="padding: 4px;">
+              <option value="">-- select --</option>
+              <option value="comparing">Comparing</option>
+              <option value="counting">Counting</option>
+            </select>
+          </p>
+          <p style="margin-top: 10px;"><strong>3. To determine victory:</strong> Which processing type checks <code>IF score &gt;= 50</code>? 
+            <select id="l3-we-3" style="padding: 4px;">
+              <option value="">-- select --</option>
+              <option value="ifthen">If/Then</option>
+              <option value="matching">Finding a Match</option>
+            </select>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 7: INDEPENDENT APPLICATION (YOU DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s7', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 7 • INDEPENDENT APPLICATION (YOU DO) [4 PTS]</span>
+          <h2 class="stage-heading">Algorithmic Pseudocode & Logic Architecture</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s7">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Task:</strong> Select your original app idea from Lesson 2. Write the step-by-step processing logic using at least <strong>TWO</strong> defined processing routines (e.g., Counting + If/Then or Comparing + Finding a Match).</p>
+        <div class="interactive-panel">
+          <label style="font-weight: 700; font-size: 0.85rem;">Select Dominant Processing Types:</label>
+          <div style="display: flex; gap: 14px; margin: 8px 0;">
+            <label><input type="checkbox" id="l3-proc-if"> If/Then</label>
+            <label><input type="checkbox" id="l3-proc-comp"> Comparing</label>
+            <label><input type="checkbox" id="l3-proc-match"> Finding a Match</label>
+            <label><input type="checkbox" id="l3-proc-count"> Counting</label>
+          </div>
+          <label style="font-weight: 700; font-size: 0.85rem; margin-top: 10px; display: block;">Structured Pseudocode Routine:</label>
+          <textarea class="student-input" id="l3-pseudocode" style="font-family: 'JetBrains Mono', monospace;" placeholder="IF user_input == condition THEN ...&#10;COMPARE value1 TO value2 ...&#10;INCREMENT counter BY 1 ..."></textarea>
+          <button class="btn btn-primary btn-sm" style="margin-top: 14px;" onclick="saveL3Logic()">Submit Pseudocode Logic (4 Pts)</button>
+          <div class="feedback-banner" id="l3-logic-fb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 8: HIGH-IMPACT PROGRESS CHECK -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s8', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 8 • HIGH-IMPACT PROGRESS CHECK [3 PTS]</span>
+          <h2 class="stage-heading">Diagnostic Formative Checkpoint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s8">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Item 1:</strong> An e-commerce checkout checks whether an entered promo code <code>"SAVE20"</code> exists inside an array of active coupon records. Which processing type is primarily deployed?</p>
+        <div class="mcq-options">
+          <label class="mcq-label" onclick="selectMCQ(this, 'l3-q1', 'A')">
+            <input type="radio" name="l3-q1" value="A"> A) Counting
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l3-q1', 'B')">
+            <input type="radio" name="l3-q1" value="B"> B) Finding a Match
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l3-q1', 'C')">
+            <input type="radio" name="l3-q1" value="C"> C) Comparing
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l3-q1', 'D')">
+            <input type="radio" name="l3-q1" value="D"> D) Rendering
+          </label>
+        </div>
+
+        <p style="margin-top: 14px;"><strong>Item 2:</strong> A smart smartwatch alerts a runner when their total daily steps cross 10,000. Identify the TWO processing types required.</p>
+        <textarea class="student-input" id="l3-q2-resp" placeholder="State the two routines and what each handles..."></textarea>
+
+        <p style="margin-top: 14px; font-weight: 700;">Student Self-Assessment Traffic Light:</p>
+        <div class="traffic-light-grid">
+          <button type="button" class="traffic-btn" data-level="green" onclick="setTraffic(this, 'l3')">🟢 Independently Mastered</button>
+          <button type="button" class="traffic-btn" data-level="yellow" onclick="setTraffic(this, 'l3')">🟡 Progressing With Assistance</button>
+          <button type="button" class="traffic-btn" data-level="red" onclick="setTraffic(this, 'l3')">🔴 Requires Targeted Reteaching</button>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 14px;" onclick="checkL3Hinge()">Submit Diagnostic Check (3 Pts)</button>
+        <div class="feedback-banner" id="l3-hinge-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 9: FEEDBACK & INSTRUCTIONAL ADJUSTMENT -->
+    <div class="dmes-stage-card" onclick="startTimer('l3-s9', 180)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 9 • FEEDBACK & ADJUSTMENT (3 MIN)</span>
+          <h2 class="stage-heading">Metacognitive Reflection & Instructional Pathway</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l3-s9">⏱ 03:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box success">
+          <strong>Teacher Diagnostic Feedback:</strong> "Be precise: <em>Comparing</em> evaluates mathematical relative relationship (greater, lesser, equal magnitude), whereas <em>Finding a Match</em> searches across a collection of discrete items to find identical string or ID records."
+        </div>
+        <label style="font-weight: 600; font-size: 0.9rem;">What mistake or confusion between comparing and matching did you clarify?</label>
+        <textarea class="student-input" id="l3-refl" placeholder="Document your cognitive adjustment..."></textarea>
+      </div>
+    </div>
+
+  </div> <!-- END LESSON 3 -->
+
+  <!-- ========================================================================= -->
+  <!-- LESSON 4 WRAPPER -->
+  <!-- ========================================================================= -->
+  <div id="lesson-module-4" class="lesson-view" style="display: none;">
+
+    <!-- STAGE 1: ENTRY -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s1', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 1 • ENTRY (2 MIN)</span>
+          <h2 class="stage-heading">The "Amnesia App" Thought Experiment</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s1">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <p>Imagine using Instagram, Netflix, or your student grading portal, but every time you closed or refreshed the app, it completely forgot your username, password, watch history, and friend list. What fundamental pillar of computing is absent, and how does this ruin usability?</p>
+      </div>
+      <div class="interactive-panel">
+        <textarea class="student-input" id="l4-entry-resp" placeholder="Describe the missing system capability and its impact on user experience..."></textarea>
+      </div>
+    </div>
+
+    <!-- STAGE 2: OBJECTIVES & SUCCESS CRITERIA -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s2', 120)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 2 • OBJECTIVES & SUCCESS CRITERIA</span>
+          <h2 class="stage-heading">Target Learning Competencies</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s2">⏱ 02:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box">
+          <strong>Learning Objective:</strong> Formulate system architectural guidelines determining what information should be stored versus dynamically recalculated, synthesizing the unified Input-Output-Storage-Processing (IOSP) model of computing.
+        </div>
+        <ul class="criteria-list">
+          <li class="criteria-item">
+            <input type="checkbox" id="l4-crit-1" onchange="recordCriteria()">
+            <label for="l4-crit-1"><strong>SC 1:</strong> I can define Storage as information saved for future system access across sessions.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l4-crit-2" onchange="recordCriteria()">
+            <label for="l4-crit-2"><strong>SC 2:</strong> I can formulate objective guidelines to decide whether data should be stored permanently or requested as live input.</label>
+          </li>
+          <li class="criteria-item">
+            <input type="checkbox" id="l4-crit-3" onchange="recordCriteria()">
+            <label for="l4-crit-3"><strong>SC 3:</strong> I can map an end-to-end computing scenario through all four stages of the complete IOSP framework.</label>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STAGE 3: DO NOW (VOCABULARY) -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s3', 240)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 3 • DO NOW (4 MIN)</span>
+          <h2 class="stage-heading">Systems Spectrum Drill [3 PTS]</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s3">⏱ 04:00</div>
+      </div>
+      <div class="content-box">
+        <p>Complete each systems engineering statement with: <code>widespread</code>, <code>negligible</code>, or <code>emerging</code>:</p>
+        <div style="margin: 14px 0;">
+          <p>1. Cloud database storage has achieved 
+            <select id="l4-vocab-1">
+              <option value="">-- select --</option>
+              <option value="negligible">negligible</option>
+              <option value="widespread">widespread</option>
+              <option value="emerging">emerging</option>
+            </select> adoption across enterprise software.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>2. Saving a single 4-digit PIN creates a 
+            <select id="l4-vocab-2">
+              <option value="">-- select --</option>
+              <option value="widespread">widespread</option>
+              <option value="negligible">negligible</option>
+              <option value="emerging">emerging</option>
+            </select> impact on flash memory capacity.
+          </p>
+        </div>
+        <div style="margin: 14px 0;">
+          <p>3. Decentralized edge data caching is an 
+            <select id="l4-vocab-3">
+              <option value="">-- select --</option>
+              <option value="widespread">widespread</option>
+              <option value="emerging">emerging</option>
+              <option value="negligible">negligible</option>
+            </select> architecture designed to process sensor inputs locally.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="checkL4Vocab()">Verify Vocabulary (3 Pts)</button>
+        <div class="feedback-banner" id="l4-vocab-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 4: EXPLICIT INSTRUCTION (TEACH TIME) -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s4', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 4 • EXPLICIT INSTRUCTION (10 MIN)</span>
+          <h2 class="stage-heading">Data Persistence & The Unified IOSP Model</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s4">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Core Concept:</strong> Storage is information saved for the computer to use in the future. All computing systems on Earth operate through the unified four-part cycle: <strong>Input, Output, Storage, and Processing (IOSP)</strong>.</p>
+        <div class="highlight-box warning">
+          <strong>The Software Storage Rule of Thumb:</strong>
+          <br>• <strong>STORE IT:</strong> If it rarely changes, if the user expects multi-session persistence, or if it represents historical state (user profiles, achievements, friend lists).
+          <br>• <strong>DO NOT STORE (Fetch Live):</strong> If the data fluctuates dynamically every second, if it can be fetched via live API, or if storing it creates severe security/privacy risks (e.g., live weather, real-time GPS coordinates, temporary search queries).
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 5: TEACHER MODEL (I DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s5', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 5 • TEACHER MODEL (I DO)</span>
+          <h2 class="stage-heading">Architectural Review: "Outfit Picker" App</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s5">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Architectural Analysis of Variables:</strong></p>
+        <ul style="padding-left: 20px; margin-bottom: 12px;">
+          <li><strong>Favorite Color:</strong> <em>Store?</em> <strong>YES.</strong> Persistent preference that rarely changes. Storing eliminates tedious re-entry every morning.</li>
+          <li><strong>Today's Weather:</strong> <em>Store?</em> <strong>NO.</strong> Weather changes continuously. Storing yesterday's weather leads to recommending raincoats on sunny mornings! It must be gathered dynamically as live API input.</li>
+        </ul>
+        <div class="code-block">
+IOSP SYNTHESIS:
+[INPUT]      Live Weather API JSON + User taps "Pick Outfit"
+[STORAGE]    User Style Profile, Wardrobe Closet Inventory, Favorite Color
+[PROCESSING] IF weather == "Rain" AND temp &lt; 15 THEN match waterproof wardrobe items
+[OUTPUT]     Render outfit card photo on OLED display + audio alert
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 6: GUIDED PRACTICE (WE DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s6', 360)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 6 • GUIDED PRACTICE (WE DO)</span>
+          <h2 class="stage-heading">"Friend Finder" Architectural Audit</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s6">⏱ 06:00</div>
+      </div>
+      <div class="content-box">
+        <p>Audit three critical data attributes for the "Friend Finder" app. Determine whether each should be permanently stored and defend your technical rationale:</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>1. List of Friends</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Social graph connections)</p>
+            <span class="stage-pill" style="margin: 6px 0; display: inline-block;">STORE PERMANENTLY</span>
+            <p style="font-size: 0.8rem;">Users expect social relationships to persist across every session.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>2. Live GPS Coordinates</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Minute-by-minute location)</p>
+            <span class="stage-pill" style="margin: 6px 0; display: inline-block; background: #fee2e2; color: #991b1b;">DO NOT STORE</span>
+            <p style="font-size: 0.8rem;">Stale immediately; massive privacy/legal liability; stream live.</p>
+          </div>
+          <div style="background: white; border: 1px solid var(--border); padding: 12px; border-radius: 8px;">
+            <strong>3. Pending Friend Invites</strong>
+            <p style="font-size: 0.8rem; color: #64748b;">(Awaiting user acceptance)</p>
+            <span class="stage-pill" style="margin: 6px 0; display: inline-block; background: #fef3c7; color: #92400e;">STORE TEMPORARILY</span>
+            <p style="font-size: 0.8rem;">Must persist in database until user explicitly accepts or denies.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 7: INDEPENDENT APPLICATION (YOU DO) -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s7', 600)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 7 • INDEPENDENT APPLICATION (YOU DO) [4 PTS]</span>
+          <h2 class="stage-heading">The Full IOSP Capstone Blueprint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s7">⏱ 10:00</div>
+      </div>
+      <div class="content-box">
+        <p>Synthesize the complete four-pillar IOSP architecture for an <strong>Autonomous Self-Driving Taxi</strong> (e.g., Dubai Smart Mobility fleet):</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px;">
+          <div class="highlight-box">
+            <strong>1. INPUTS (Sensors &amp; Network):</strong>
+            <textarea class="student-input" id="l4-iosp-in" placeholder="List at least 3 inputs (LIDAR, cameras, GPS, route API)..."></textarea>
+          </div>
+          <div class="highlight-box">
+            <strong>2. STORAGE (Persistent State):</strong>
+            <textarea class="student-input" id="l4-iosp-store" placeholder="List at least 2 persistent elements (HD 3D City Maps, passenger account)..."></textarea>
+          </div>
+          <div class="highlight-box">
+            <strong>3. PROCESSING (CPU/GPU Algorithms):</strong>
+            <textarea class="student-input" id="l4-iosp-proc" placeholder="Describe 2 routines (object tracking, collision avoidance conditional)..."></textarea>
+          </div>
+          <div class="highlight-box">
+            <strong>4. OUTPUTS (Actuators &amp; UI):</strong>
+            <textarea class="student-input" id="l4-iosp-out" placeholder="List 2 outputs (steering motor torque, passenger screen ETA)..."></textarea>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 16px;" onclick="saveL4Blueprint()">Submit IOSP Architecture (4 Pts)</button>
+        <div class="feedback-banner" id="l4-iosp-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 8: HIGH-IMPACT PROGRESS CHECK -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s8', 300)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 8 • HIGH-IMPACT PROGRESS CHECK [3 PTS]</span>
+          <h2 class="stage-heading">Diagnostic Formative Checkpoint</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s8">⏱ 05:00</div>
+      </div>
+      <div class="content-box">
+        <p><strong>Item 1:</strong> Which of the following is the most compelling technical justification for storing data in an app?</p>
+        <div class="mcq-options">
+          <label class="mcq-label" onclick="selectMCQ(this, 'l4-q1', 'A')">
+            <input type="radio" name="l4-q1" value="A"> A) The data changes every second and requires constant re-rendering.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l4-q1', 'B')">
+            <input type="radio" name="l4-q1" value="B"> B) The data file size is small enough to fit on any drive.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l4-q1', 'C')">
+            <input type="radio" name="l4-q1" value="C"> C) The data represents persistent user settings that remain constant across sessions.
+          </label>
+          <label class="mcq-label" onclick="selectMCQ(this, 'l4-q1', 'D')">
+            <input type="radio" name="l4-q1" value="D"> D) The data can be easily recalculated from live sensors in milliseconds.
+          </label>
+        </div>
+
+        <p style="margin-top: 14px;"><strong>Item 2:</strong> In one technical sentence, explain how Processing and Storage depend on each other.</p>
+        <textarea class="student-input" id="l4-q2-resp" placeholder="Describe the read/write relationship between CPU processing and storage memory..."></textarea>
+
+        <p style="margin-top: 14px; font-weight: 700;">Student Self-Assessment Traffic Light:</p>
+        <div class="traffic-light-grid">
+          <button type="button" class="traffic-btn" data-level="green" onclick="setTraffic(this, 'l4')">🟢 Independently Mastered</button>
+          <button type="button" class="traffic-btn" data-level="yellow" onclick="setTraffic(this, 'l4')">🟡 Progressing With Assistance</button>
+          <button type="button" class="traffic-btn" data-level="red" onclick="setTraffic(this, 'l4')">🔴 Requires Targeted Reteaching</button>
+        </div>
+
+        <button class="btn btn-primary btn-sm" style="margin-top: 14px;" onclick="checkL4Hinge()">Submit Diagnostic Check (3 Pts)</button>
+        <div class="feedback-banner" id="l4-hinge-fb"></div>
+      </div>
+    </div>
+
+    <!-- STAGE 9: FEEDBACK & INSTRUCTIONAL ADJUSTMENT -->
+    <div class="dmes-stage-card" onclick="startTimer('l4-s9', 180)">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span class="stage-pill">STAGE 9 • FEEDBACK & ADJUSTMENT (3 MIN)</span>
+          <h2 class="stage-heading">Metacognitive Reflection & Instructional Pathway</h2>
+        </div>
+        <div class="stage-timer-widget" id="timer-l4-s9">⏱ 03:00</div>
+      </div>
+      <div class="content-box">
+        <div class="highlight-box success">
+          <strong>Teacher Diagnostic Feedback:</strong> "Storing GPS history without encryption creates a legal hazard under international privacy laws (e.g., GDPR). Professional software designers only store information when user value exceeds privacy risks!"
+        </div>
+        <label style="font-weight: 600; font-size: 0.9rem;">Which Success Criterion can you now demonstrate with complete independence?</label>
+        <textarea class="student-input" id="l4-refl" placeholder="Document your growth across the 4 lessons..."></textarea>
+      </div>
+    </div>
+
+  </div> <!-- END LESSON 4 -->
+
+  <!-- ========================================================================= -->
+  <!-- FINAL STUDENT COMPLETION DASHBOARD (PERSISTENT & PRINTABLE) -->
+  <!-- ========================================================================= -->
+  <div class="dashboard-card" id="completion-dashboard">
+    <div class="dashboard-title">
+      <span>🏁 MISSION COMPLETE: PORTFOLIO SUMMARY</span>
+    </div>
+    <p style="color: #94a3b8; font-size: 0.9rem;">American Curriculum Computer Science • Verified Academic Submission</p>
+
+    <div class="dashboard-grid">
+      <div class="dash-stat-box">
+        <div class="dash-label">Candidate Name</div>
+        <div class="dash-val" id="dash-student-name" style="font-size: 1.1rem; color: #fff;">[Not Entered]</div>
+      </div>
+      <div class="dash-stat-box">
+        <div class="dash-label">Grade &amp; Section</div>
+        <div class="dash-val" id="dash-cohort" style="font-size: 1.1rem; color: #fff;">Grade 11 - Class A</div>
+      </div>
+      <div class="dash-stat-box">
+        <div class="dash-label">Assignment Score</div>
+        <div class="dash-val" id="dash-total-score">0 / 40 PTS</div>
+      </div>
+      <div class="dash-stat-box">
+        <div class="dash-label">Instructional Pathway</div>
+        <div class="dash-val" id="dash-pathway" style="font-size: 1rem; color: #34d399;">Ready for Extension</div>
+      </div>
+    </div>
+
+    <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 18px; margin: 20px 0;">
+      <h4 style="color: #38bdf8; margin-bottom: 10px; font-size: 0.95rem;">DMES 9-Stage Architecture Completion Checklist:</h4>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; font-size: 0.85rem;" id="dmes-checklist">
+        <div>✅ Stage 1: Curiosity Entry &amp; Prediction</div>
+        <div>✅ Stage 2: Objectives &amp; Success Criteria</div>
+        <div>✅ Stage 3: Do Now Applied Vocabulary</div>
+        <div>✅ Stage 4: Explicit Instruction &amp; Video</div>
+        <div>✅ Stage 5: Teacher Model (I Do)</div>
+        <div>✅ Stage 6: Guided Practice (We Do)</div>
+        <div>✅ Stage 7: Independent Application (You Do)</div>
+        <div>✅ Stage 8: Diagnostic Progress Check</div>
+        <div>✅ Stage 9: Feedback &amp; Reflection</div>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 24px;">
+      <div style="font-size: 0.85rem; color: #94a3b8;">
+        <span>Timestamp: </span><span id="dash-timestamp">--</span>
+      </div>
+      <button class="btn btn-primary" onclick="window.print()" style="padding: 12px 24px; font-size: 0.95rem;">
+        🖨️ Print / Save Clean PDF for Google Classroom
+      </button>
+    </div>
+  </div>
+
+</div> <!-- END CONTAINER -->
+
+<script>
+  // Global State
+  const state = {
+    currentLesson: 1,
+    studentName: "",
+    grade: "Grade 11",
+    section: "A",
+    date: new Date().toISOString().split('T')[0],
+    scores: {
+      l1Vocab: 0, l1Lab: 0, l1Hinge: 0,
+      l2Vocab: 0, l2Lab: 0, l2Hinge: 0,
+      l3Vocab: 0, l3Lab: 0, l3Hinge: 0,
+      l4Vocab: 0, l4Lab: 0, l4Hinge: 0
+    },
+    timers: {},
+    timeSpent: {},
+    traffic: { l1: "", l2: "", l3: "", l4: "" }
+  };
+
+  // Initialize
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('meta-date').value = state.date;
+    syncStudentInfo();
+    updateScoreDisplay();
+  });
+
+  // Switch Active Lesson View
+  function switchLesson(num) {
+    state.currentLesson = num;
+    for (let i = 1; i <= 4; i++) {
+      const view = document.getElementById(`lesson-module-${i}`);
+      const btn = document.getElementById(`tab-btn-${i}`);
+      if (i === num) {
+        view.style.display = 'block';
+        btn.classList.add('active');
+      } else {
+        view.style.display = 'none';
+        btn.classList.remove('active');
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Sync Student Metadata
+  function syncStudentInfo() {
+    state.studentName = document.getElementById('meta-student-name').value.trim() || "[Not Entered]";
+    state.grade = document.getElementById('meta-grade').value;
+    state.section = document.getElementById('meta-section').value;
+    state.date = document.getElementById('meta-date').value;
+
+    document.getElementById('dash-student-name').textContent = state.studentName;
+    document.getElementById('dash-cohort').textContent = `${state.grade} - Class ${state.section}`;
+    document.getElementById('dash-timestamp').textContent = new Date().toLocaleString();
+  }
+
+  // Timer Management
+  function startTimer(id, durationSeconds) {
+    if (state.timers[id]) return; // already active
+
+    let remaining = durationSeconds;
+    const widget = document.getElementById(`timer-${id}`);
+    if (!widget) return;
+
+    widget.classList.add('running');
+    state.timeSpent[id] = 0;
+
+    state.timers[id] = setInterval(() => {
+      remaining--;
+      state.timeSpent[id]++;
+
+      const mins = Math.floor(remaining / 60).toString().padStart(2, '0');
+      const secs = (remaining % 60).toString().padStart(2, '0');
+      widget.textContent = `⏱ ${mins}:${secs}`;
+      document.getElementById('hud-active-timer').textContent = `${mins}:${secs}`;
+
+      if (remaining <= 30) {
+        widget.classList.add('expiring');
+      }
+
+      if (remaining <= 0) {
+        clearInterval(state.timers[id]);
+        widget.textContent = `⏱ EXPIRED`;
+        widget.classList.remove('running');
+      }
+    }, 1000);
+  }
+
+  // Record Success Criteria Checkboxes
+  function recordCriteria() {
+    // Interactive engagement registered
+  }
+
+  // Generic MCQ Selector
+  function selectMCQ(labelEl, groupName, val) {
+    const parent = labelEl.parentElement;
+    parent.querySelectorAll('.mcq-label').forEach(el => {
+      el.classList.remove('correct', 'incorrect');
+      el.style.borderColor = 'var(--border)';
+    });
+    labelEl.querySelector('input[type="radio"]').checked = true;
+  }
+
+  // Traffic Light Selector
+  function setTraffic(btnEl, lessonKey) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.traffic-btn').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
+    state.traffic[lessonKey] = btnEl.getAttribute('data-level');
+
+    // Update pathway in dashboard
+    const pathwayEl = document.getElementById('dash-pathway');
+    if (state.traffic[lessonKey] === 'red') {
+      pathwayEl.textContent = "Targeted Reteach / Small Group";
+      pathwayEl.style.color = "var(--danger)";
+    } else if (state.traffic[lessonKey] === 'yellow') {
+      pathwayEl.textContent = "Peer Collaborative Support";
+      pathwayEl.style.color = "var(--warning)";
+    } else {
+      pathwayEl.textContent = "Ready for Honors Extension";
+      pathwayEl.style.color = "var(--success)";
+    }
+  }
+
+  // Lesson 1 Grading
+  function checkL1Vocab() {
+    const v1 = document.getElementById('l1-vocab-1').value;
+    const v2 = document.getElementById('l1-vocab-2').value;
+    const v3 = document.getElementById('l1-vocab-3').value;
+    const fb = document.getElementById('l1-vocab-fb');
+
+    let pts = 0;
+    if (v1 === 'awareness') pts++;
+    if (v2 === 'perception') pts++;
+    if (v3 === 'behavior') pts++;
+
+    state.scores.l1Vocab = pts;
+    fb.style.display = 'block';
+    if (pts === 3) {
+      fb.className = 'feedback-banner highlight-box success';
+      fb.innerHTML = '<strong>Perfect! (3/3 Pts)</strong> You accurately contextualized situational awareness, sensor perception, and programmed behavior in computational systems.';
+    } else {
+      fb.className = 'feedback-banner highlight-box warning';
+      fb.innerHTML = `<strong>Score: ${pts}/3 Pts.</strong> Review: 1 = awareness, 2 = perception, 3 = behavior.`;
+    }
+    updateScoreDisplay();
+  }
+
+  function gradeL1Lab() {
+    const a1 = document.getElementById('l1-art-1').value;
+    const a2 = document.getElementById('l1-art-2').value;
+    const a3 = document.getElementById('l1-art-3').value;
+    const a4 = document.getElementById('l1-art-4').value;
+    const fb = document.getElementById('l1-lab-fb');
+
+    let pts = 0;
+    if (a1 === 'Computer') pts++;
+    if (a2 === 'Not a Computer') pts++;
+    if (a3 === 'Computer') pts++;
+    if (a4 === 'Not a Computer') pts++;
+
+    state.scores.l1Lab = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Classification Logged (${pts}/4 Pts):</strong> Smoke Detector = Computer (sensor threshold check); Abacus = Not a Computer (human performs memory and processing); Digital Dishwasher = Computer (microcontroller wash cycles); Rotary Phone = Not a Computer (mechanical pulse switch).`;
+    updateScoreDisplay();
+  }
+
+  function checkL1Hinge() {
+    const selected = document.querySelector('input[name="l1-q1"]:checked');
+    const q2 = document.getElementById('l1-q2-resp').value.trim();
+    const fb = document.getElementById('l1-hinge-fb');
+
+    let pts = 0;
+    if (selected && selected.value === 'C') pts += 2;
+    if (q2.length > 15) pts += 1;
+
+    state.scores.l1Hinge = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Diagnostic Verified (${pts}/3 Pts):</strong> Correct! A computer is a machine that manipulates information to solve problems. Robotic vacuums input sensor streams, map room grids in memory, and calculate motor navigation decisions.`;
+    updateScoreDisplay();
+  }
+
+  // Lesson 2 Grading
+  function checkL2Vocab() {
+    const v1 = document.getElementById('l2-vocab-1').value;
+    const v2 = document.getElementById('l2-vocab-2').value;
+    const v3 = document.getElementById('l2-vocab-3').value;
+    const fb = document.getElementById('l2-vocab-fb');
+
+    let pts = 0;
+    if (v1 === 'perspective') pts++;
+    if (v2 === 'controversial') pts++;
+    if (v3 === 'influence') pts++;
+
+    state.scores.l2Vocab = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Vocabulary Verified (${pts}/3 Pts):</strong> 1 = perspective, 2 = controversial, 3 = influence.`;
+    updateScoreDisplay();
+  }
+
+  function saveL2Blueprint() {
+    const name = document.getElementById('l2-app-name').value.trim();
+    const userIn = document.getElementById('l2-app-user-in').value.trim();
+    const fb = document.getElementById('l2-app-fb');
+
+    state.scores.l2Lab = (name && userIn) ? 4 : 2;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Architecture Blueprint Logged (4/4 Pts):</strong> Multi-source input/output pathway verified and mapped to student profile.`;
+    updateScoreDisplay();
+  }
+
+  function checkL2Hinge() {
+    const selected = document.querySelector('input[name="l2-q2"]:checked');
+    const q1 = document.getElementById('l2-q1-resp').value.trim();
+    const fb = document.getElementById('l2-hinge-fb');
+
+    let pts = 0;
+    if (selected && selected.value === 'B') pts += 2;
+    if (q1.length > 10) pts += 1;
+
+    state.scores.l2Hinge = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Diagnostic Result (${pts}/3 Pts):</strong> Item 1: Input = Barcode camera optical sensor; Output = Screen nutrition/price display. Item 2: Accelerometer tilt detection is an automated ambient sensor.`;
+    updateScoreDisplay();
+  }
+
+  // Lesson 3 Grading
+  function checkL3Vocab() {
+    const v1 = document.getElementById('l3-vocab-1').value;
+    const v2 = document.getElementById('l3-vocab-2').value;
+    const v3 = document.getElementById('l3-vocab-3').value;
+    const fb = document.getElementById('l3-vocab-fb');
+
+    let pts = 0;
+    if (v1 === 'debate') pts++;
+    if (v2 === 'standpoint') pts++;
+    if (v3 === 'substantial') pts++;
+
+    state.scores.l3Vocab = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Vocabulary Verified (${pts}/3 Pts):</strong> 1 = debate, 2 = standpoint, 3 = substantial.`;
+    updateScoreDisplay();
+  }
+
+  function saveL3Logic() {
+    const code = document.getElementById('l3-pseudocode').value.trim();
+    const fb = document.getElementById('l3-logic-fb');
+
+    state.scores.l3Lab = code.length > 20 ? 4 : 2;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Pseudocode Logic Validated (4/4 Pts):</strong> Algorithmic conditional routine saved.`;
+    updateScoreDisplay();
+  }
+
+  function checkL3Hinge() {
+    const selected = document.querySelector('input[name="l3-q1"]:checked');
+    const q2 = document.getElementById('l3-q2-resp').value.trim();
+    const fb = document.getElementById('l3-hinge-fb');
+
+    let pts = 0;
+    if (selected && selected.value === 'B') pts += 2;
+    if (q2.toLowerCase().includes('count') || q2.toLowerCase().includes('compare') || q2.toLowerCase().includes('if')) pts += 1;
+
+    state.scores.l3Hinge = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Diagnostic Verified (${pts}/3 Pts):</strong> Promo lookup = Finding a Match; Fitness tracker = Counting (step accumulation) + Comparing/If-Then (evaluating threshold).`;
+    updateScoreDisplay();
+  }
+
+  // Lesson 4 Grading
+  function checkL4Vocab() {
+    const v1 = document.getElementById('l4-vocab-1').value;
+    const v2 = document.getElementById('l4-vocab-2').value;
+    const v3 = document.getElementById('l4-vocab-3').value;
+    const fb = document.getElementById('l4-vocab-fb');
+
+    let pts = 0;
+    if (v1 === 'widespread') pts++;
+    if (v2 === 'negligible') pts++;
+    if (v3 === 'emerging') pts++;
+
+    state.scores.l4Vocab = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Vocabulary Verified (${pts}/3 Pts):</strong> 1 = widespread, 2 = negligible, 3 = emerging.`;
+    updateScoreDisplay();
+  }
+
+  function saveL4Blueprint() {
+    const inVal = document.getElementById('l4-iosp-in').value.trim();
+    const fb = document.getElementById('l4-iosp-fb');
+
+    state.scores.l4Lab = inVal.length > 10 ? 4 : 2;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Unified IOSP Model Synthesized (4/4 Pts):</strong> Input-Output-Storage-Processing loop verified.`;
+    updateScoreDisplay();
+  }
+
+  function checkL4Hinge() {
+    const selected = document.querySelector('input[name="l4-q1"]:checked');
+    const q2 = document.getElementById('l4-q2-resp').value.trim();
+    const fb = document.getElementById('l4-hinge-fb');
+
+    let pts = 0;
+    if (selected && selected.value === 'C') pts += 2;
+    if (q2.length > 15) pts += 1;
+
+    state.scores.l4Hinge = pts;
+    fb.style.display = 'block';
+    fb.className = 'feedback-banner highlight-box success';
+    fb.innerHTML = `<strong>Diagnostic Verified (${pts}/3 Pts):</strong> Storing data is justified when values represent persistent multi-session settings. Processing reads memory state to execute context logic, and writes back updated results.`;
+    updateScoreDisplay();
+  }
+
+  // Interactive Visualizer Functions
+  function runSim(mode) {
+    const canvas = document.getElementById('l1-vis-canvas');
+    if (mode === 'gear') {
+      canvas.innerHTML = `
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #f59e0b; text-align: left; width: 100%;">
+          &gt; Mechanical Switch Closed (Pencil Inserted)<br>
+          &gt; Motor Coil Energized with 120V AC<br>
+          &gt; Planetary Gears Rotate Blades @ 2400 RPM<br>
+          &gt; Physical Graphite and Wood Shaved by Friction<br>
+          <span style="color: #ef4444;">&gt; DATA REGISTERS: NONE (Pure Mechanical Energy Transformation)</span>
+        </div>
+      `;
+    } else {
+      canvas.innerHTML = `
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #38bdf8; text-align: left; width: 100%;">
+          &gt; Keypad Digit '2', '0', '0' Pushed (2 min countdown)<br>
+          &gt; Humidity Sensor ADC Voltage = 2.14V Read by Microcontroller<br>
+          &gt; CPU Executes Routine: IF humidity &gt; 1.8V THEN Reduce Magnetron Duty Cycle to 70%<br>
+          &gt; Memory Register 'remaining_secs' Decrements Every 1000ms<br>
+          <span style="color: #10b981;">&gt; DATA MANIPULATION DETECTED: Embedded Computer Active!</span>
+        </div>
+      `;
+    }
+  }
+
+  function triggerIO(type) {
+    const canvas = document.getElementById('l2-vis-canvas');
+    if (type === 'touch') {
+      canvas.innerHTML = `
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #38bdf8;">
+          [DIRECT USER INPUT] Touch Capacitive Digitizer (X: 182, Y: 430)<br>
+          ➔ CPU Event Listener 'click' Fired<br>
+          ➔ OUTPUT: Audio Click Chime + OLED Button State Active
+        </div>
+      `;
+    } else if (type === 'gps') {
+      canvas.innerHTML = `
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #34d399;">
+          [AMBIENT SENSOR INPUT] GPS Satellite Lock: 25.2048° N, 55.2708° E<br>
+          ➔ Accelerometer Peak: 1.4G (Pedometer Step Increment)<br>
+          ➔ OUTPUT: Route Drawn in Blue on Map Display
+        </div>
+      `;
+    } else {
+      canvas.innerHTML = `
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #f59e0b;">
+          [CLOUD NETWORK STREAM] HTTP GET https://api.weather.gov/v1/forecast<br>
+          ➔ Received JSON: {"temp": 28, "humidity": "45%", "uv": 6}<br>
+          ➔ OUTPUT: Warning Notification: "High UV Index - Stay Hydrated!"
+        </div>
+      `;
+    }
+  }
+
+  // Update Global Score & Dashboard
+  function updateScoreDisplay() {
+    let total = 0;
+    for (const key in state.scores) {
+      total += state.scores[key];
+    }
+    document.getElementById('hud-total-score').textContent = `${total} / 40 PTS`;
+    document.getElementById('dash-total-score').textContent = `${total} / 40 PTS`;
+  }
+</script>
+
+</body>
+</html>
